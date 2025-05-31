@@ -2,8 +2,8 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-FIELD_SIZE = (10, 10)
-WORKERS = 4
+FIELD_SIZE = (100, 100)
+WORKERS = 16
 POPULATION_SIZE = 30
 NUM_GENERATIONS = 100
 
@@ -120,12 +120,17 @@ def evolve_worker_order(field_size, workers):
 
     population = [WorkerOrder(worker_paths) for _ in range(POPULATION_SIZE)]
 
+    best_fitness_per_generation = []  # <-- Track best fitness
+
     for gen in range(NUM_GENERATIONS):
         population.sort(key=lambda w: w.fitness)
         best = population[0]
+        best_fitness_per_generation.append(best.fitness)  # <-- Save it
         print(f"Gen {gen+1}: Path Length = {best.fitness}")
+        
         if (gen + 1) % 20 == 0:
             plot_path(best.path, field_size, title=f"Generation {gen+1}")
+        
         survivors = population[:10]
         new_population = survivors.copy()
         while len(new_population) < POPULATION_SIZE:
@@ -141,5 +146,31 @@ def evolve_worker_order(field_size, workers):
     plot_path(best.path, field_size, title="Final Path")
     print(f"Final Path Length: {best.fitness}")
 
+    # Plot the progress chart
+    plt.figure(figsize=(10, 5))
+    plt.plot(range(1, NUM_GENERATIONS + 1), best_fitness_per_generation, marker='o')
+    plt.xlabel('Generation')
+    plt.ylabel('Best Path Length')
+    plt.title('Progress of Best Fitness Over Generations')
+    plt.grid(True)
+    plt.show()
+
 # Run
 evolve_worker_order(FIELD_SIZE, WORKERS)
+
+
+def theoretical_min_path(field_size, workers):
+    width, height = field_size
+    total_cells = width * height
+    worker_blocks = int(workers)
+    cells_per_worker = total_cells // worker_blocks
+    steps_per_worker = cells_per_worker - 1
+    total_worker_steps = steps_per_worker * worker_blocks
+    minimal_worker_connections = worker_blocks - 1  
+    return_to_start = (width - 1) + (height - 1)  
+
+    minimal_total_steps = total_worker_steps + minimal_worker_connections + return_to_start
+    return minimal_total_steps
+
+# Example
+print(theoretical_min_path(FIELD_SIZE, WORKERS))
