@@ -2,8 +2,8 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-FIELD_SIZE = (100, 100)
-WORKERS = 16
+FIELD_SIZE = (1000, 1000)
+WORKERS = 64
 POPULATION_SIZE = 30
 NUM_GENERATIONS = 100
 
@@ -107,7 +107,7 @@ def plot_path(path, field_size, title="Path"):
 
     plt.imshow(grid, cmap='Blues', origin='upper')
     x_coords, y_coords = zip(*path)
-    plt.plot(x_coords, y_coords, color='red')
+    plt.plot(x_coords, y_coords, color='red',linewidth=0.2)
     plt.scatter(x_coords[0], y_coords[0], color='green', label='Start')
     plt.scatter(x_coords[-1], y_coords[-1], color='blue', label='End')
     plt.title(title)
